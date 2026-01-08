@@ -22,7 +22,7 @@ export default function ProductsPage() {
 
   const categoryParam = searchParams.get('category') as Category | null;
 
-  /* Sync URL → Store */
+  /* URL → Store (single source of truth) */
   useEffect(() => {
     const nextCategory = categoryParam ?? 'all';
 
@@ -33,10 +33,8 @@ export default function ProductsPage() {
 
   const filteredProducts = getFilteredProducts();
 
-  /* Update URL (replacement for setSearchParams) */
+  /* Update URL only */
   const handleCategoryChange = (category: Category) => {
-    setCategoryFilter(category);
-
     const params = new URLSearchParams(searchParams.toString());
 
     if (category === 'all') {
@@ -57,7 +55,7 @@ export default function ProductsPage() {
       <section className="relative h-64 overflow-hidden bg-gradient-hero md:h-80">
         <div className="absolute inset-0">
           <Image
-            src="https://images.pexels.com/photos/1926769/pexels-photo-1926769.jpeg?auto=compress&cs=tinysrgb&w=1920"
+            src="https://images.pexels.com/photos/1926769/pexels-photo-1926769.jpeg"
             alt="Shop Collection"
             fill
             className="object-cover opacity-30"
@@ -127,7 +125,6 @@ export default function ProductsPage() {
               ))}
             </motion.div>
 
-            {/* Empty State */}
             {filteredProducts.length === 0 && (
               <div className="py-20 text-center">
                 <p className="text-lg text-muted-foreground">
