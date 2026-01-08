@@ -1,6 +1,8 @@
-'use client';
+export const dynamic = 'force-dynamic';
 
-import { useEffect } from 'react';
+('use client');
+
+import { useEffect, useMemo } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
@@ -20,21 +22,37 @@ export default function ProductsPage() {
 
   const { state, setCategoryFilter, getFilteredProducts } = useStore();
 
-  const categoryParam = searchParams.get('category') as Category | null;
+  /**
+   * Read category from URL (stable)
+   */
+  const categoryParam = useMemo<Category>(() => {
+    const param = searchParams.get('category');
+    return param === 'jeans' || param === 't-shirts' ? param : 'all';
+  }, [searchParams]);
 
-  /* URL → Store (single source of truth) */
+  /**
+   * Sync URL → Store (SAFE)
+   */
   useEffect(() => {
-    const nextCategory = categoryParam ?? 'all';
-
-    if (state.filters.category !== nextCategory) {
-      setCategoryFilter(nextCategory);
+    if (state.filters.category !== categoryParam) {
+      setCategoryFilter(categoryParam);
     }
   }, [categoryParam, state.filters.category, setCategoryFilter]);
 
-  const filteredProducts = getFilteredProducts();
+  /**
+   * Derived products (memoized)
+   */
+  const filteredProducts = useMemo(
+    () => getFilteredProducts(),
+    [getFilteredProducts, state.filters]
+  );
 
-  /* Update URL only */
+  /**
+   * Update URL (replacement for react-router setSearchParams)
+   */
   const handleCategoryChange = (category: Category) => {
+    if (category === state.filters.category) return;
+
     const params = new URLSearchParams(searchParams.toString());
 
     if (category === 'all') {
@@ -51,11 +69,11 @@ export default function ProductsPage() {
 
   return (
     <>
-      {/* Hero */}
+      {/* Hero Section */}
       <section className="relative h-64 overflow-hidden bg-gradient-hero md:h-80">
         <div className="absolute inset-0">
           <Image
-            src="https://images.pexels.com/photos/1926769/pexels-photo-1926769.jpeg"
+            src="https://images.pexels.com/photos/1926769/pexels-photo-1926769.jpeg?auto=compress&cs=tinysrgb&w=1920"
             alt="Shop Collection"
             fill
             className="object-cover opacity-30"
@@ -86,53 +104,52 @@ export default function ProductsPage() {
       {/* Filters & Products */}
       <Container>
         <section className="py-12 md:py-16">
-          <div className="container">
-            {/* Filters */}
-            <div className="mb-10 flex flex-wrap justify-center gap-3">
-              {(['all', 'jeans', 't-shirts'] as const).map((category) => (
-                <Button
-                  key={category}
-                  size="lg"
-                  variant={
-                    state.filters.category === category ? 'default' : 'outline'
-                  }
-                  onClick={() => handleCategoryChange(category)}
-                  className={cn(
-                    'min-w-27.5 capitalize',
-                    state.filters.category === category && 'shadow-medium'
-                  )}
-                >
-                  {category === 'all' ? 'All Products' : category}
-                </Button>
-              ))}
-            </div>
-
-            {/* Product Grid */}
-            <motion.div
-              layout
-              className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
-            >
-              {filteredProducts.map((product, index) => (
-                <motion.div
-                  key={product.id}
-                  layout
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                >
-                  <ProductCard product={product} />
-                </motion.div>
-              ))}
-            </motion.div>
-
-            {filteredProducts.length === 0 && (
-              <div className="py-20 text-center">
-                <p className="text-lg text-muted-foreground">
-                  No products found.
-                </p>
-              </div>
-            )}
+          {/* Category Filters */}
+          <div className="mb-10 flex flex-wrap justify-center gap-3">
+            {(['all', 'jeans', 't-shirts'] as const).map((category) => (
+              <Button
+                key={category}
+                size="lg"
+                variant={
+                  state.filters.category === category ? 'default' : 'outline'
+                }
+                onClick={() => handleCategoryChange(category)}
+                className={cn(
+                  'min-w-27.5 capitalize',
+                  state.filters.category === category && 'shadow-medium'
+                )}
+              >
+                {category === 'all' ? 'All Products' : category}
+              </Button>
+            ))}
           </div>
+
+          {/* Product Grid */}
+          <motion.div
+            layout
+            className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+          >
+            {filteredProducts.map((product, index) => (
+              <motion.div
+                key={product.id}
+                layout
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05 }}
+              >
+                <ProductCard product={product} />
+              </motion.div>
+            ))}
+          </motion.div>
+
+          {/* Empty State */}
+          {filteredProducts.length === 0 && (
+            <div className="py-20 text-center">
+              <p className="text-lg text-muted-foreground">
+                No products found.
+              </p>
+            </div>
+          )}
         </section>
       </Container>
     </>
