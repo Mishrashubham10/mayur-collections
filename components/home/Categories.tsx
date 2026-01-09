@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { motion } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
@@ -10,14 +10,14 @@ const categories = [
     title: 'Jeans',
     description: 'Premium denim for every occasion',
     image:
-      'https://images.pexels.com/photos/1598505/pexels-photo-1598505.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://i.pinimg.com/1200x/15/6e/c0/156ec00cc0f2b10221d2437326ce2b41.jpg',
     link: '/products?category=jeans',
   },
   {
     title: 'T-Shirts',
     description: 'Essential basics, elevated',
     image:
-      'https://images.pexels.com/photos/6311387/pexels-photo-6311387.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://i.pinimg.com/1200x/4c/c2/7f/4cc27f780f5ef8c4de0f2a1f4471b296.jpg',
     link: '/products?category=t-shirts',
   },
 ];
@@ -59,7 +59,7 @@ export const Categories = () => {
                     alt={category.title}
                     className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
                     fill
-                    loading='lazy'
+                    loading="lazy"
                   />
                 </div>
                 <div className="absolute inset-0 bg-linear-to-t from-charcoal/80 via-charcoal/20 to-transparent" />
