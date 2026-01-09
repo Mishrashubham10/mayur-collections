@@ -1,15 +1,19 @@
-"use client";
+'use client';
 
 import { products } from '@/data/products';
-import React, {
+import {
   createContext,
   useContext,
   useReducer,
-  ReactNode,
   useMemo,
+  useEffect,
+  ReactNode,
 } from 'react';
 
-// Types
+/* -------------------------------------------------------------------------- */
+/*                                   TYPES                                    */
+/* -------------------------------------------------------------------------- */
+
 export interface Product {
   id: string;
   name: string;
@@ -17,7 +21,6 @@ export interface Product {
   image: string;
   category: 'jeans' | 't-shirts';
   color: string;
-  size?: string;
 }
 
 export interface CartItem extends Product {
@@ -31,14 +34,54 @@ interface StoreState {
     items: CartItem[];
     total: number;
   };
+  wishlist: Product[];
   filters: {
     category: 'all' | 'jeans' | 't-shirts';
     searchQuery: string;
   };
 }
 
-// Initial Products Data
+/* -------------------------------------------------------------------------- */
+/*                           CONTEXT TYPE (YOUR API)                           */
+/* -------------------------------------------------------------------------- */
+
+interface StoreContextType {
+  state: StoreState;
+
+  // Cart actions
+  addToCart: (item: CartItem) => void;
+  removeFromCart: (id: string, selectedSize: string) => void;
+  updateQuantity: (id: string, selectedSize: string, quantity: number) => void;
+  clearCart: () => void;
+
+  // Wishlist actions
+  addToWishlist: (product: Product) => void;
+  removeFromWishlist: (id: string) => void;
+  isInWishlist: (id: string) => boolean;
+
+  // Filter actions
+  setCategoryFilter: (category: 'all' | 'jeans' | 't-shirts') => void;
+  setSearchQuery: (query: string) => void;
+
+  // Selectors
+  getProductById: (id: string) => Product | undefined;
+  getProductsByCategory: (category: 'jeans' | 't-shirts') => Product[];
+  getFeaturedProducts: () => Product[];
+  getFilteredProducts: () => Product[];
+
+  cartItemCount: number;
+  wishlistCount: number;
+}
+
+/* -------------------------------------------------------------------------- */
+/*                              INITIAL DATA                                  */
+/* -------------------------------------------------------------------------- */
+
 const initialProducts: Product[] = products;
+
+/* -------------------------------------------------------------------------- */
+/*                              INITIAL STATE                                 */
+/* -------------------------------------------------------------------------- */
 
 const initialState: StoreState = {
   products: initialProducts,
@@ -46,113 +89,122 @@ const initialState: StoreState = {
     items: [],
     total: 0,
   },
+  wishlist: [],
   filters: {
     category: 'all',
     searchQuery: '',
   },
 };
 
-// Action Types
-type StoreAction =
+/* -------------------------------------------------------------------------- */
+/*                          LOCAL STORAGE HELPERS                              */
+/* -------------------------------------------------------------------------- */
+
+const CART_KEY = 'shop-cart';
+
+const loadCart = () => {
+  if (typeof window === 'undefined') return null;
+  try {
+    return JSON.parse(localStorage.getItem(CART_KEY) || 'null');
+  } catch {
+    return null;
+  }
+};
+
+const saveCart = (cart: StoreState['cart']) => {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(CART_KEY, JSON.stringify(cart));
+  }
+};
+
+/* -------------------------------------------------------------------------- */
+/*                               ACTION TYPES                                 */
+/* -------------------------------------------------------------------------- */
+
+type Action =
   | { type: 'ADD_TO_CART'; payload: CartItem }
-  | { type: 'REMOVE_FROM_CART'; payload: { id: string; selectedSize: string } }
+  | {
+      type: 'REMOVE_FROM_CART';
+      payload: { id: string; selectedSize: string };
+    }
   | {
       type: 'UPDATE_QUANTITY';
       payload: { id: string; selectedSize: string; quantity: number };
     }
   | { type: 'CLEAR_CART' }
+  | { type: 'ADD_TO_WISHLIST'; payload: Product }
+  | { type: 'REMOVE_FROM_WISHLIST'; payload: string }
   | { type: 'SET_CATEGORY_FILTER'; payload: 'all' | 'jeans' | 't-shirts' }
   | { type: 'SET_SEARCH_QUERY'; payload: string };
 
-// Helper function to calculate cart total
-const calculateTotal = (items: CartItem[]): number => {
-  return items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-};
+/* -------------------------------------------------------------------------- */
+/*                                 HELPERS                                    */
+/* -------------------------------------------------------------------------- */
 
-// Reducer
-const storeReducer = (state: StoreState, action: StoreAction): StoreState => {
+const calculateTotal = (items: CartItem[]) =>
+  items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+/* -------------------------------------------------------------------------- */
+/*                                 REDUCER                                    */
+/* -------------------------------------------------------------------------- */
+
+const reducer = (state: StoreState, action: Action): StoreState => {
   switch (action.type) {
     case 'ADD_TO_CART': {
-      const existingIndex = state.cart.items.findIndex(
-        (item) =>
-          item.id === action.payload.id &&
-          item.selectedSize === action.payload.selectedSize
+      const existing = state.cart.items.find(
+        (i) =>
+          i.id === action.payload.id &&
+          i.selectedSize === action.payload.selectedSize
       );
 
-      let newItems: CartItem[];
-      if (existingIndex > -1) {
-        newItems = state.cart.items.map((item, index) =>
-          index === existingIndex
-            ? { ...item, quantity: item.quantity + action.payload.quantity }
-            : item
-        );
-      } else {
-        newItems = [...state.cart.items, action.payload];
-      }
+      const items = existing
+        ? state.cart.items.map((i) =>
+            i.id === existing.id && i.selectedSize === existing.selectedSize
+              ? { ...i, quantity: i.quantity + action.payload.quantity }
+              : i
+          )
+        : [...state.cart.items, action.payload];
 
       return {
         ...state,
-        cart: {
-          items: newItems,
-          total: calculateTotal(newItems),
-        },
+        cart: { items, total: calculateTotal(items) },
       };
     }
 
     case 'REMOVE_FROM_CART': {
-      const newItems = state.cart.items.filter(
-        (item) =>
+      const items = state.cart.items.filter(
+        (i) =>
           !(
-            item.id === action.payload.id &&
-            item.selectedSize === action.payload.selectedSize
+            i.id === action.payload.id &&
+            i.selectedSize === action.payload.selectedSize
           )
       );
-      return {
-        ...state,
-        cart: {
-          items: newItems,
-          total: calculateTotal(newItems),
-        },
-      };
+      return { ...state, cart: { items, total: calculateTotal(items) } };
     }
 
     case 'UPDATE_QUANTITY': {
-      if (action.payload.quantity <= 0) {
-        const newItems = state.cart.items.filter(
-          (item) =>
-            !(
-              item.id === action.payload.id &&
-              item.selectedSize === action.payload.selectedSize
-            )
-        );
-        return {
-          ...state,
-          cart: {
-            items: newItems,
-            total: calculateTotal(newItems),
-          },
-        };
-      }
-
-      const newItems = state.cart.items.map((item) =>
-        item.id === action.payload.id &&
-        item.selectedSize === action.payload.selectedSize
-          ? { ...item, quantity: action.payload.quantity }
-          : item
+      const items = state.cart.items.map((i) =>
+        i.id === action.payload.id &&
+        i.selectedSize === action.payload.selectedSize
+          ? { ...i, quantity: action.payload.quantity }
+          : i
       );
-      return {
-        ...state,
-        cart: {
-          items: newItems,
-          total: calculateTotal(newItems),
-        },
-      };
+      return { ...state, cart: { items, total: calculateTotal(items) } };
     }
 
     case 'CLEAR_CART':
+      return { ...state, cart: { items: [], total: 0 } };
+
+    case 'ADD_TO_WISHLIST':
       return {
         ...state,
-        cart: { items: [], total: 0 },
+        wishlist: [...state.wishlist, action.payload],
+      };
+
+    case 'REMOVE_FROM_WISHLIST':
+      return {
+        ...state,
+        wishlist: state.wishlist.filter((p) => p.id !== action.payload),
       };
 
     case 'SET_CATEGORY_FILTER':
@@ -172,34 +224,34 @@ const storeReducer = (state: StoreState, action: StoreAction): StoreState => {
   }
 };
 
-// Context Types
-interface StoreContextType {
-  state: StoreState;
-  // Cart actions
-  addToCart: (item: CartItem) => void;
-  removeFromCart: (id: string, selectedSize: string) => void;
-  updateQuantity: (id: string, selectedSize: string, quantity: number) => void;
-  clearCart: () => void;
-  // Filter actions
-  setCategoryFilter: (category: 'all' | 'jeans' | 't-shirts') => void;
-  setSearchQuery: (query: string) => void;
-  // Selectors
-  getProductById: (id: string) => Product | undefined;
-  getProductsByCategory: (category: 'jeans' | 't-shirts') => Product[];
-  getFeaturedProducts: () => Product[];
-  getFilteredProducts: () => Product[];
-  cartItemCount: number;
-}
+/* -------------------------------------------------------------------------- */
+/*                              INITIALIZER                                   */
+/* -------------------------------------------------------------------------- */
 
-const StoreContext = createContext<StoreContextType | undefined>(undefined);
+const initializer = (state: StoreState): StoreState => {
+  const cart = loadCart();
+  return cart ? { ...state, cart } : state;
+};
 
-// Provider Component
-export const StoreProvider: React.FC<{ children: ReactNode }> = ({
-  children,
-}) => {
-  const [state, dispatch] = useReducer(storeReducer, initialState);
+/* -------------------------------------------------------------------------- */
+/*                                  CONTEXT                                   */
+/* -------------------------------------------------------------------------- */
 
-  // Cart Actions
+const StoreContext = createContext<StoreContextType | null>(null);
+
+/* -------------------------------------------------------------------------- */
+/*                                  PROVIDER                                  */
+/* -------------------------------------------------------------------------- */
+
+export function StoreProvider({ children }: { children: ReactNode }) {
+  const [state, dispatch] = useReducer(reducer, initialState, initializer);
+
+  useEffect(() => {
+    saveCart(state.cart);
+  }, [state.cart]);
+
+  /* ------------------------------- Actions -------------------------------- */
+
   const addToCart = (item: CartItem) =>
     dispatch({ type: 'ADD_TO_CART', payload: item });
 
@@ -214,14 +266,16 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({
 
   const clearCart = () => dispatch({ type: 'CLEAR_CART' });
 
-  // Filter Actions
-  const setCategoryFilter = (category: 'all' | 'jeans' | 't-shirts') =>
-    dispatch({ type: 'SET_CATEGORY_FILTER', payload: category });
+  const addToWishlist = (product: Product) =>
+    dispatch({ type: 'ADD_TO_WISHLIST', payload: product });
 
-  const setSearchQuery = (query: string) =>
-    dispatch({ type: 'SET_SEARCH_QUERY', payload: query });
+  const removeFromWishlist = (id: string) =>
+    dispatch({ type: 'REMOVE_FROM_WISHLIST', payload: id });
 
-  // Memoized Selectors
+  /* ------------------------------- Selectors ------------------------------ */
+
+  const isInWishlist = (id: string) => state.wishlist.some((p) => p.id === id);
+
   const getProductById = (id: string) =>
     state.products.find((p) => p.id === id);
 
@@ -230,78 +284,59 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({
 
   const getFeaturedProducts = () => state.products.slice(0, 4);
 
-  const getFilteredProducts = () => {
-    let filtered = state.products;
+  const getFilteredProducts = () =>
+    state.products.filter((p) => {
+      const categoryMatch =
+        state.filters.category === 'all' ||
+        p.category === state.filters.category;
 
-    if (state.filters.category !== 'all') {
-      filtered = filtered.filter((p) => p.category === state.filters.category);
-    }
+      const searchMatch = p.name
+        .toLowerCase()
+        .includes(state.filters.searchQuery.toLowerCase());
 
-    if (state.filters.searchQuery) {
-      const query = state.filters.searchQuery.toLowerCase();
-      filtered = filtered.filter(
-        (p) =>
-          p.name.toLowerCase().includes(query) ||
-          p.color.toLowerCase().includes(query)
-      );
-    }
-
-    return filtered;
-  };
+      return categoryMatch && searchMatch;
+    });
 
   const cartItemCount = useMemo(
-    () => state.cart.items.reduce((sum, item) => sum + item.quantity, 0),
+    () => state.cart.items.reduce((s, i) => s + i.quantity, 0),
     [state.cart.items]
   );
 
-  const contextValue: StoreContextType = {
+  const wishlistCount = state.wishlist.length;
+
+  const value: StoreContextType = {
     state,
     addToCart,
     removeFromCart,
     updateQuantity,
     clearCart,
-    setCategoryFilter,
-    setSearchQuery,
+    addToWishlist,
+    removeFromWishlist,
+    isInWishlist,
+    setCategoryFilter: (c) =>
+      dispatch({ type: 'SET_CATEGORY_FILTER', payload: c }),
+    setSearchQuery: (q) => dispatch({ type: 'SET_SEARCH_QUERY', payload: q }),
     getProductById,
     getProductsByCategory,
     getFeaturedProducts,
     getFilteredProducts,
     cartItemCount,
+    wishlistCount,
   };
 
   return (
-    <StoreContext.Provider value={contextValue}>
-      {children}
-    </StoreContext.Provider>
+    <StoreContext.Provider value={value}>{children}</StoreContext.Provider>
   );
-};
+}
 
-// ========== CUSTOM HOOK =========
+/* -------------------------------------------------------------------------- */
+/*                                   HOOK                                     */
+/* -------------------------------------------------------------------------- */
+
 export const useStore = (): StoreContextType => {
   const context = useContext(StoreContext);
   if (!context) {
-    throw new Error('useStore must be used within a StoreProvider');
+    throw new Error('useStore must be used within StoreProvider');
   }
   return context;
 };
-
-// Legacy exports for backward compatibility
-export const useCart = () => {
-  const store = useStore();
-  return {
-    state: { items: store.state.cart.items, total: store.state.cart.total },
-    addItem: store.addToCart,
-    removeItem: (id: string) => {
-      const item = store.state.cart.items.find((i) => i.id === id);
-      if (item) store.removeFromCart(id, item.selectedSize);
-    },
-    updateQuantity: (id: string, quantity: number) => {
-      const item = store.state.cart.items.find((i) => i.id === id);
-      if (item) store.updateQuantity(id, item.selectedSize, quantity);
-    },
-    clearCart: store.clearCart,
-    itemCount: store.cartItemCount,
-  };
-};
-
-export const CartProvider = StoreProvider;

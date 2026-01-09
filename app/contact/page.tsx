@@ -8,7 +8,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { MapPin, Phone, Mail, Clock, Send } from 'lucide-react';
 import { toast } from 'sonner';
-import Image from 'next/image';
 
 const contactInfo = [
   {
@@ -57,7 +56,7 @@ export default function ContactPage() {
 
   return (
     <div className="h-full w-full flex flex-col items-center py-12">
-      {/* Hero Section */}
+      {/* =========== HERO SECTION =========== */}
       <section className="relative flex items-center justify-center">
         <div className="container text-center">
           <motion.h1
@@ -79,9 +78,9 @@ export default function ContactPage() {
         </div>
       </section>
 
-      {/* Contact Section */}
-      <section className="">
-        <div className="container">
+      {/* =========== CONTACT SECTION =========== */}
+      <section className="mt-12">
+        <div className="w-full h-full">
           <div className="grid gap-16 lg:grid-cols-2 lg:items-start">
             {/* Contact Form */}
             <motion.div
@@ -137,6 +136,7 @@ export default function ContactPage() {
                 <Button
                   type="submit"
                   size="lg"
+                  variant="outline"
                   className="group w-full sm:w-auto"
                 >
                   Send Message
@@ -145,7 +145,7 @@ export default function ContactPage() {
               </form>
             </motion.div>
 
-            {/* Contact Info */}
+            {/* ============ CONTACT INFO =========== */}
             <motion.div
               initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -161,7 +161,7 @@ export default function ContactPage() {
                 </p>
               </div>
 
-              <div className="grid gap-6 sm:grid-cols-2">
+              <div className="grid gap-4 sm:grid-cols-2">
                 {contactInfo.map((info, index) => (
                   <motion.div
                     key={info.title}
@@ -171,12 +171,12 @@ export default function ContactPage() {
                     transition={{ delay: index * 0.1 }}
                     className="rounded-xl bg-secondary p-6"
                   >
-                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary">
+                    <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-primary">
                       <info.icon className="h-5 w-5 text-primary-foreground" />
                     </div>
 
                     <h3 className="font-semibold">{info.title}</h3>
-                    <div className="mt-2 space-y-1">
+                    <div className="mt-2">
                       {info.details.map((detail, i) => (
                         <p key={i} className="text-sm text-muted-foreground">
                           {detail}
@@ -186,20 +186,21 @@ export default function ContactPage() {
                   </motion.div>
                 ))}
               </div>
-
-              {/* Map */}
-              <div className="relative h-64 w-full overflow-hidden rounded-xl">
-                <Image
-                  src="https://images.pexels.com/photos/4272668/pexels-photo-4272668.jpeg"
-                  alt="Store Location"
-                  fill
-                  className="object-cover"
-                />
-              </div>
             </motion.div>
           </div>
         </div>
       </section>
+
+      {/* =========== MAP ========== */}
+      <div className="relative h-64 w-full overflow-hidden rounded-xl px-6 md:px-6 lg:px-12 xl:px-16 mt-4">
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3741.138611900933!2d72.8594536585872!3d19.231845960844453!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7b0d014371abf%3A0xda99f0cf932d8f08!2sHari%20Om%20Plaza%2C%20Cosmos%20Park%2C%20Mahatma%20Gandhi%20Rd%2C%20Sukarwadi%2C%20Borivali%20East%2C%20Mumbai%2C%20Maharashtra%20400066!5e0!3m2!1sen!2sin!4v1767874344806!5m2!1sen!2sin"
+          style={{ border: 0, width: '100%', height: '100%' }}
+          allowFullScreen
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+        />
+      </div>
     </div>
   );
 }

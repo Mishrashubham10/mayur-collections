@@ -56,7 +56,7 @@ export default function AboutPage() {
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            className="font-display text-4xl font-bold text-primary-foreground md:text-6xl"
+            className="font-display text-4xl font-bold text-white md:text-6xl"
           >
             Our Story
           </motion.h1>
@@ -64,7 +64,7 @@ export default function AboutPage() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="mt-4 max-w-2xl text-lg text-primary-foreground/80"
+            className="mt-4 max-w-2xl text-lg text-gray-300"
           >
             Redefining men&apos;s fashion, one stitch at a time
           </motion.p>
@@ -117,8 +117,7 @@ export default function AboutPage() {
       </section>
 
       {/* Stats Section */}
-      <section className="bg-gradient-hero py-16">
-        <div className="container">
+      <section className="bg-gradient-hero py-16 w-full">
           <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
             {stats.map((stat, index) => (
               <motion.div
@@ -129,16 +128,15 @@ export default function AboutPage() {
                 transition={{ delay: index * 0.1 }}
                 className="text-center"
               >
-                <p className="font-display text-4xl font-bold  md:text-5xl">
+                <p className="font-display text-4xl font-bold  md:text-5xl text-white">
                   {stat.value}
                 </p>
-                <p className="mt-2 text-sm">
+                <p className="mt-2 text-sm text-gray-300">
                   {stat.label}
                 </p>
               </motion.div>
             ))}
           </div>
-        </div>
       </section>
 
       {/* Values Section */}

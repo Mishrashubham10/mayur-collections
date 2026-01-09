@@ -51,8 +51,8 @@ export default function ProductsClient() {
   };
 
   return (
-    <>
-      {/* Hero */}
+    <div className='w-full h-full'>
+      {/* =========== HERO =========== */}
       <section className="relative h-64 overflow-hidden bg-gradient-hero md:h-80">
         <Image
           src="https://images.pexels.com/photos/1926769/pexels-photo-1926769.jpeg"
@@ -66,7 +66,7 @@ export default function ProductsClient() {
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="font-display text-4xl font-bold text-primary-foreground md:text-5xl"
+            className="font-display text-4xl font-bold text-white md:text-5xl"
           >
             Our Collection
           </motion.h1>
@@ -75,7 +75,7 @@ export default function ProductsClient() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="mt-4 text-lg text-primary-foreground/80"
+            className="mt-4 text-lg text-gray-300/80"
           >
             {products.length} products
           </motion.p>
@@ -126,6 +126,6 @@ export default function ProductsClient() {
           )}
         </section>
       </Container>
-    </>
+    </div>
   );
 }

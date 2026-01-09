@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingBag, Menu, X, Search } from 'lucide-react';
+import { ShoppingBag, Menu, X, Search, User2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useStore } from '@/contexts/ShopContext';
@@ -24,7 +24,7 @@ export const Header = () => {
   const pathname = usePathname();
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/80 px-6">
+    <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/80 px-6 md:px-6 lg:px-12">
       <div className="h-24 w-full flex items-center justify-between">
         {/* ========= LOGO ========== */}
         <Link href="/" className="flex items-center">
@@ -69,9 +69,9 @@ export const Header = () => {
 
         {/* =========== ACTIONS ============ */}
         <div className="flex items-center space-x-4">
-          <Button variant="ghost" size="icon" className="hidden md:flex">
+          {/* <Button variant="ghost" size="icon" className="hidden md:flex">
             <Search className="h-5 w-5" />
-          </Button>
+          </Button> */}
 
           <Link href="/cart">
             <Button variant="ghost" size="icon" className="relative">
@@ -100,6 +100,10 @@ export const Header = () => {
               <Menu className="h-5 w-5" />
             )}
           </Button>
+
+          <Link href="/login">
+            <User2 size={20} />
+          </Link>
         </div>
       </div>
 

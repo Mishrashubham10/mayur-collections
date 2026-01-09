@@ -13,7 +13,7 @@ export const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-primary text-primary-foreground px-6">
+    <footer className="bg-primary text-primary-foreground px-6 md:px-6 lg:px-12">
       <div className="py-16">
         <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
           {/* Brand */}
