@@ -13,12 +13,16 @@ const contactInfo = [
   {
     icon: MapPin,
     title: 'Visit Us',
-    details: ['123 Fashion Street', 'Mumbai, Maharashtra 400001', 'India'],
+    details: [
+      'shop no 5 bmc market, chikuwadi, near phoenix hospital',
+      'Borivali, Mumbai, Maharashtra 400001',
+      'India',
+    ],
   },
   {
     icon: Phone,
     title: 'Call Us',
-    details: ['+91 98765 43210', '+91 12345 67890'],
+    details: ['+91 9359043986'],
   },
   {
     icon: Mail,
@@ -82,7 +86,7 @@ export default function ContactPage() {
       <section className="mt-12">
         <div className="w-full h-full">
           <div className="grid gap-16 lg:grid-cols-2 lg:items-start">
-            {/* Contact Form */}
+            {/* =========== CONTACT FORM =========== */}
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}

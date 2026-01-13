@@ -1,5 +1,6 @@
 'use client';
 
+import CheckoutPopup from '@/components/layouts/CheckoutPopup';
 import Container from '@/components/layouts/Container';
 import { Button } from '@/components/ui/button';
 import { useStore } from '@/contexts/ShopContext';
@@ -8,8 +9,10 @@ import { motion } from 'framer-motion';
 import { ArrowRight, Minus, Plus, ShoppingBag, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useState } from 'react';
 
 export default function CartsPage() {
+  const [open, setOpen] = useState(false);
   const { state, removeFromCart, updateQuantity, clearCart } = useStore();
 
   const formatPrice = (price: number) => {
@@ -65,7 +68,7 @@ export default function CartsPage() {
           </motion.h1>
 
           <div className="mt-10 grid gap-10 lg:grid-cols-3">
-            {/* Cart Items */}
+            {/* =========== CART ITEMS ========== */}
             <div className="lg:col-span-2">
               <div className="space-y-4">
                 {state.cart.items.map((item, index) => (
@@ -157,7 +160,7 @@ export default function CartsPage() {
               </Button>
             </div>
 
-            {/* Order Summary */}
+            {/* ========== ORDER SUMMARY =========== */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -197,6 +200,14 @@ export default function CartsPage() {
               <Button variant="outline" size="lg" className="mt-6 w-full">
                 Proceed to Checkout
               </Button>
+
+              <CheckoutPopup
+                open={open}
+                setOpen={setOpen}
+                title="Order Successful 🎉"
+                description="Thank you for shopping with us. Your order has been placed and
+              will be delivered soon!"
+              />
 
               <p className="mt-4 text-center text-xs text-muted-foreground">
                 Free shipping on orders above ₹1,499
