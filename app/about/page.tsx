@@ -85,7 +85,7 @@ export default function AboutPage() {
                 Crafting Style Since 2020
               </h2>
               <p className="text-lg leading-relaxed text-muted-foreground">
-                Mayur Collection was born from a simple vision: to make premium
+                MAYUR WEARS & SWAPNIL COLLECTIONS PRIVATE LIMITED was born from a simple vision: to make premium
                 men&apos;s fashion accessible to everyone. What started as a small
                 venture with a passion for quality denim has grown into a
                 trusted destination for men who appreciate style and substance.

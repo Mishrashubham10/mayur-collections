@@ -28,12 +28,14 @@ export interface CartItem extends Product {
   selectedSize: string;
 }
 
+interface CartState {
+  items: CartItem[];
+  total: number;
+}
+
 interface StoreState {
   products: Product[];
-  cart: {
-    items: CartItem[];
-    total: number;
-  };
+  cart: CartState;
   wishlist: Product[];
   filters: {
     category: 'all' | 'jeans' | 't-shirts';
@@ -42,24 +44,24 @@ interface StoreState {
 }
 
 /* -------------------------------------------------------------------------- */
-/*                           CONTEXT TYPE (YOUR API)                           */
+/*                           CONTEXT TYPE (API)                                */
 /* -------------------------------------------------------------------------- */
 
 interface StoreContextType {
   state: StoreState;
 
-  // Cart actions
+  // Cart
   addToCart: (item: CartItem) => void;
   removeFromCart: (id: string, selectedSize: string) => void;
   updateQuantity: (id: string, selectedSize: string, quantity: number) => void;
   clearCart: () => void;
 
-  // Wishlist actions
+  // Wishlist
   addToWishlist: (product: Product) => void;
   removeFromWishlist: (id: string) => void;
   isInWishlist: (id: string) => boolean;
 
-  // Filter actions
+  // Filters
   setCategoryFilter: (category: 'all' | 'jeans' | 't-shirts') => void;
   setSearchQuery: (query: string) => void;
 
@@ -69,6 +71,7 @@ interface StoreContextType {
   getFeaturedProducts: () => Product[];
   getFilteredProducts: () => Product[];
 
+  // Counts
   cartItemCount: number;
   wishlistCount: number;
 }
@@ -79,16 +82,14 @@ interface StoreContextType {
 
 const initialProducts: Product[] = products;
 
-/* -------------------------------------------------------------------------- */
-/*                              INITIAL STATE                                 */
-/* -------------------------------------------------------------------------- */
+const emptyCart: CartState = {
+  items: [],
+  total: 0,
+};
 
 const initialState: StoreState = {
   products: initialProducts,
-  cart: {
-    items: [],
-    total: 0,
-  },
+  cart: emptyCart,
   wishlist: [],
   filters: {
     category: 'all',
@@ -102,23 +103,39 @@ const initialState: StoreState = {
 
 const CART_KEY = 'shop-cart';
 
-const loadCart = () => {
+const isValidCart = (cart: CartState): cart is CartState =>
+  cart &&
+  Array.isArray(cart.items) &&
+  typeof cart.total === 'number';
+
+const loadCart = (): CartState | null => {
   if (typeof window === 'undefined') return null;
   try {
-    return JSON.parse(localStorage.getItem(CART_KEY) || 'null');
+    const raw = localStorage.getItem(CART_KEY);
+    if (!raw) return null;
+
+    const parsed = JSON.parse(raw);
+    return isValidCart(parsed) ? parsed : null;
   } catch {
     return null;
   }
 };
 
-const saveCart = (cart: StoreState['cart']) => {
+const saveCart = (cart: CartState) => {
   if (typeof window !== 'undefined') {
     localStorage.setItem(CART_KEY, JSON.stringify(cart));
   }
 };
 
 /* -------------------------------------------------------------------------- */
-/*                               ACTION TYPES                                 */
+/*                                 HELPERS                                    */
+/* -------------------------------------------------------------------------- */
+
+const calculateTotal = (items: CartItem[]) =>
+  items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+/* -------------------------------------------------------------------------- */
+/*                                 REDUCER                                    */
 /* -------------------------------------------------------------------------- */
 
 type Action =
@@ -137,17 +154,6 @@ type Action =
   | { type: 'SET_CATEGORY_FILTER'; payload: 'all' | 'jeans' | 't-shirts' }
   | { type: 'SET_SEARCH_QUERY'; payload: string };
 
-/* -------------------------------------------------------------------------- */
-/*                                 HELPERS                                    */
-/* -------------------------------------------------------------------------- */
-
-const calculateTotal = (items: CartItem[]) =>
-  items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-
-/* -------------------------------------------------------------------------- */
-/*                                 REDUCER                                    */
-/* -------------------------------------------------------------------------- */
-
 const reducer = (state: StoreState, action: Action): StoreState => {
   switch (action.type) {
     case 'ADD_TO_CART': {
@@ -165,10 +171,7 @@ const reducer = (state: StoreState, action: Action): StoreState => {
           )
         : [...state.cart.items, action.payload];
 
-      return {
-        ...state,
-        cart: { items, total: calculateTotal(items) },
-      };
+      return { ...state, cart: { items, total: calculateTotal(items) } };
     }
 
     case 'REMOVE_FROM_CART': {
@@ -193,13 +196,10 @@ const reducer = (state: StoreState, action: Action): StoreState => {
     }
 
     case 'CLEAR_CART':
-      return { ...state, cart: { items: [], total: 0 } };
+      return { ...state, cart: emptyCart };
 
     case 'ADD_TO_WISHLIST':
-      return {
-        ...state,
-        wishlist: [...state.wishlist, action.payload],
-      };
+      return { ...state, wishlist: [...state.wishlist, action.payload] };
 
     case 'REMOVE_FROM_WISHLIST':
       return {
@@ -250,7 +250,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     saveCart(state.cart);
   }, [state.cart]);
 
-  /* ------------------------------- Actions -------------------------------- */
+  /* -------------------------------- Actions -------------------------------- */
 
   const addToCart = (item: CartItem) =>
     dispatch({ type: 'ADD_TO_CART', payload: item });
@@ -258,7 +258,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const removeFromCart = (id: string, selectedSize: string) =>
     dispatch({ type: 'REMOVE_FROM_CART', payload: { id, selectedSize } });
 
-  const updateQuantity = (id: string, selectedSize: string, quantity: number) =>
+  const updateQuantity = (
+    id: string,
+    selectedSize: string,
+    quantity: number
+  ) =>
     dispatch({
       type: 'UPDATE_QUANTITY',
       payload: { id, selectedSize, quantity },
@@ -272,9 +276,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const removeFromWishlist = (id: string) =>
     dispatch({ type: 'REMOVE_FROM_WISHLIST', payload: id });
 
-  /* ------------------------------- Selectors ------------------------------ */
+  /* -------------------------------- Selectors ------------------------------- */
 
-  const isInWishlist = (id: string) => state.wishlist.some((p) => p.id === id);
+  const isInWishlist = (id: string) =>
+    state.wishlist.some((p) => p.id === id);
 
   const getProductById = (id: string) =>
     state.products.find((p) => p.id === id);

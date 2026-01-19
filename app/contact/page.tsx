@@ -27,7 +27,7 @@ const contactInfo = [
   {
     icon: Mail,
     title: 'Email Us',
-    details: ['hello@mayurcollection.com', 'support@mayurcollection.com'],
+    details: ['Mayurk4556@gmail.com', 'Mayurwears&scollectionspvtltd@gmail.com'],
   },
   {
     icon: Clock,
@@ -84,7 +84,7 @@ export default function ContactPage() {
 
       {/* =========== CONTACT SECTION =========== */}
       <section className="mt-12">
-        <div className="w-full h-full">
+        <div className="mx-auto max-w-6xl px-4">
           <div className="grid gap-16 lg:grid-cols-2 lg:items-start">
             {/* =========== CONTACT FORM =========== */}
             <motion.div
@@ -182,7 +182,7 @@ export default function ContactPage() {
                     <h3 className="font-semibold">{info.title}</h3>
                     <div className="mt-2">
                       {info.details.map((detail, i) => (
-                        <p key={i} className="text-sm text-muted-foreground">
+                        <p key={i} className="text-sm text-muted-foreground wrap-break-word">
                           {detail}
                         </p>
                       ))}
