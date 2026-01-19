@@ -32,30 +32,51 @@ export default function CheckoutPopup({
 
   function handleContinueShopping() {
     clearCart();
-    // setCartOpen(false);
     setOpen(false);
     router.push('/products');
   }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="sm:max-w-md rounded-2xl shadow-xl">
-        <DialogHeader className="text-center">
-          <CheckCircle2 className="size-12 text-green-600 mx-auto mb-3" />
-          <DialogTitle className="text-2xl font-bold text-foreground">
-            {title}
-          </DialogTitle>
+      <DialogContent
+        className="
+          sm:max-w-md
+          rounded-xl
+          bg-card
+          text-card-foreground
+          shadow-strong
+          border
+        "
+      >
+        <DialogHeader className="text-center space-y-3">
+          {/* Success Icon */}
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-gradient-accent shadow-accent">
+            <CheckCircle2 className="h-7 w-7 text-accent-foreground" />
+          </div>
+
+          {/* Title */}
+          <DialogTitle className="font-display text-2xl">{title}</DialogTitle>
+
+          {/* Description */}
           {description && (
-            <DialogDescription className="text-muted-foreground mt-2">
+            <DialogDescription className="text-muted-foreground max-w-sm mx-auto">
               {description}
             </DialogDescription>
           )}
         </DialogHeader>
 
-        <DialogFooter>
+        <DialogFooter className="mt-6">
           <Button
             onClick={handleContinueShopping}
-            className="gradient-primary text-primary-foreground shadow-md"
+            size="lg"
+            className="
+              w-full
+              bg-gradient-hero
+              text-primary-foreground
+              shadow-medium
+              hover:opacity-90
+              transition
+            "
           >
             Continue Shopping
           </Button>

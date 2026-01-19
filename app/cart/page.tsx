@@ -55,6 +55,10 @@ export default function CartsPage() {
     );
   }
 
+  const handlePopout = () => {
+    setOpen(true);
+  };
+
   return (
     <Container>
       <section className="py-12 md:py-16">
@@ -109,7 +113,7 @@ export default function CartsPage() {
                               updateQuantity(
                                 item.id,
                                 item.selectedSize,
-                                Math.max(1, item.quantity - 1)
+                                Math.max(1, item.quantity - 1),
                               )
                             }
                           >
@@ -126,7 +130,7 @@ export default function CartsPage() {
                               updateQuantity(
                                 item.id,
                                 item.selectedSize,
-                                item.quantity + 1
+                                item.quantity + 1,
                               )
                             }
                           >
@@ -190,14 +194,19 @@ export default function CartsPage() {
                       {formatPrice(
                         state.cart.total >= 1499
                           ? state.cart.total
-                          : state.cart.total + 99
+                          : state.cart.total + 99,
                       )}
                     </span>
                   </div>
                 </div>
               </div>
 
-              <Button variant="outline" size="lg" className="mt-6 w-full">
+              <Button
+                variant="outline"
+                size="lg"
+                className="mt-6 w-full"
+                onClick={handlePopout}
+              >
                 Proceed to Checkout
               </Button>
 
