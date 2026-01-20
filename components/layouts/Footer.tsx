@@ -22,7 +22,7 @@ export const Footer = () => {
               Mayur Collection
             </h3>
             <p className="text-sm leading-relaxed text-primary-foreground/80">
-              Premium men&apos;s fashion since 2020. Curating the finest denim
+              Premium men&apos;s fashion since 2025. Curating the finest denim
               and essentials for the modern gentleman.
             </p>
             <div className="flex space-x-4">

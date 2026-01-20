@@ -27,7 +27,7 @@ const contactInfo = [
   {
     icon: Mail,
     title: 'Email Us',
-    details: ['Mayurk4556@gmail.com', 'Mayurwears&scollectionspvtltd@gmail.com'],
+    details: ['Mayurk4556@gmail.com', 'mayurwears.scollectionspvtltd@gmail.com'],
   },
   {
     icon: Clock,

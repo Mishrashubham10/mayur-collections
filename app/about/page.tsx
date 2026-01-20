@@ -82,7 +82,7 @@ export default function AboutPage() {
               className="space-y-6"
             >
               <h2 className="font-display text-3xl font-bold text-foreground md:text-4xl">
-                Crafting Style Since 2020
+                Crafting Style Since 2025
               </h2>
               <p className="text-lg leading-relaxed text-muted-foreground">
                 MAYUR WEARS & SWAPNIL COLLECTIONS PRIVATE LIMITED was born from a simple vision: to make premium
