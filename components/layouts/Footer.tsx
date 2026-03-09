@@ -124,7 +124,7 @@ export const Footer = () => {
             <ul className="space-y-3 text-sm">
               <li className="flex items-center space-x-3">
                 <MapPin className="h-4 w-4 text-accent" />
-                <span>Borivali, Mumbai, Maharashtra 400001, India</span>
+                <span>Borivali, Mumbai, Maharashtra 400092, India</span>
               </li>
               <li className="flex items-center space-x-3">
                 <Phone className="h-4 w-4 text-accent" />
