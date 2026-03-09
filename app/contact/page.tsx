@@ -15,7 +15,7 @@ const contactInfo = [
     title: 'Visit Us',
     details: [
       'shop no 5 bmc market, chikuwadi, near phoenix hospital',
-      'Borivali, Mumbai, Maharashtra 400001',
+      'Borivali, Mumbai, Maharashtra 400092',
       'India',
     ],
   },
@@ -27,7 +27,10 @@ const contactInfo = [
   {
     icon: Mail,
     title: 'Email Us',
-    details: ['Mayurk4556@gmail.com', 'mayurwears.scollectionspvtltd@gmail.com'],
+    details: [
+      'Mayurk4556@gmail.com',
+      'mayurwears.scollectionspvtltd@gmail.com',
+    ],
   },
   {
     icon: Clock,
@@ -53,7 +56,7 @@ export default function ContactPage() {
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -182,7 +185,10 @@ export default function ContactPage() {
                     <h3 className="font-semibold">{info.title}</h3>
                     <div className="mt-2">
                       {info.details.map((detail, i) => (
-                        <p key={i} className="text-sm text-muted-foreground wrap-break-word">
+                        <p
+                          key={i}
+                          className="text-sm text-muted-foreground wrap-break-word"
+                        >
                           {detail}
                         </p>
                       ))}
@@ -197,8 +203,15 @@ export default function ContactPage() {
 
       {/* =========== MAP ========== */}
       <div className="relative h-64 w-full overflow-hidden rounded-xl px-6 md:px-6 lg:px-12 xl:px-16 mt-4">
-        <iframe
+        {/* <iframe
           src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3741.138611900933!2d72.8594536585872!3d19.231845960844453!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7b0d014371abf%3A0xda99f0cf932d8f08!2sHari%20Om%20Plaza%2C%20Cosmos%20Park%2C%20Mahatma%20Gandhi%20Rd%2C%20Sukarwadi%2C%20Borivali%20East%2C%20Mumbai%2C%20Maharashtra%20400066!5e0!3m2!1sen!2sin!4v1767874344806!5m2!1sen!2sin"
+          style={{ border: 0, width: '100%', height: '100%' }}
+          allowFullScreen
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+        /> */}
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m16!1m12!1m3!1d30136.82936743988!2d72.82628805993242!3d19.234313094526016!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!2m1!1sshop%20no%205%20bmc%20market%2C%20chikuwadi%2C%20near%20phoenix%20hospital&#39;%2C%20Mumbai%2C%20Maharashtra%20400092!5e0!3m2!1sen!2sin!4v1773068062131!5m2!1sen!2sin"
           style={{ border: 0, width: '100%', height: '100%' }}
           allowFullScreen
           loading="lazy"

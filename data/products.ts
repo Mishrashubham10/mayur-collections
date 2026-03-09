@@ -187,7 +187,7 @@ export const products: Product[] = [
   // =====================
   {
     id: 'tshirt-1',
-    name: 'Essential Cotton Crew',
+    name: 'Cotton Crew',
     price: 499,
     image:
       'https://i.pinimg.com/736x/c7/21/59/c72159872c86159bba194a771580ea89.jpg',
@@ -199,7 +199,7 @@ export const products: Product[] = [
     name: 'Premium Black Tee',
     price: 699,
     image:
-      'https://i.pinimg.com/736x/9f/4e/b9/9f4eb94f5edf36c80c94ef2b05ba21e5.jpg',
+      'https://i.pinimg.com/1200x/53/c5/3e/53c53e94c0f95739db39703b1aed7784.jpg',
     category: 't-shirts',
     color: 'Black',
   },
@@ -217,7 +217,7 @@ export const products: Product[] = [
     name: 'Striped Polo Tee',
     price: 1499,
     image:
-      'https://i.pinimg.com/736x/4e/dd/79/4edd79f1006ebd8978759591b52b815a.jpg',
+      'https://i.pinimg.com/1200x/ba/9d/ae/ba9daebdd3702ecce69c12cb72d56aa9.jpg',
     category: 't-shirts',
     color: 'Blue Stripe',
   },
@@ -244,7 +244,7 @@ export const products: Product[] = [
     name: 'Minimal Logo Tee',
     price: 999,
     image:
-      'https://i.pinimg.com/736x/7a/23/63/7a2363612f990e9c31f6d4124375d7c3.jpg',
+      'https://i.pinimg.com/1200x/ac/83/21/ac832199130f200ca8db4f79d1ad966b.jpg',
     category: 't-shirts',
     color: 'Charcoal',
   },
