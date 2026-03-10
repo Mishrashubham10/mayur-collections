@@ -74,6 +74,14 @@ export const Footer = () => {
                   Contact
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/terms"
+                  className="transition-colors hover:text-accent"
+                >
+                  Terms & Conditions
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -113,6 +121,14 @@ export const Footer = () => {
                   className="transition-colors hover:text-accent"
                 >
                   Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/refund"
+                  className="transition-colors hover:text-accent"
+                >
+                  Refund Policy
                 </Link>
               </li>
             </ul>
